@@ -59,7 +59,7 @@ bool isHit(CacheLine *line, int line_length, unsigned long tag) {
   return res;
 }
 /*将一个缓存块放入缓存行中*/
-int PutInCache(CacheLine *line, int line_length, unsigned long tag) {
+bool PutInCache(CacheLine *line, int line_length, unsigned long tag) {
   int i, index = 0;
   bool result = false;
   size_t time = line[0].time;
@@ -84,6 +84,46 @@ int PutInCache(CacheLine *line, int line_length, unsigned long tag) {
   line[index].vaildBit = true;
   line[index].time = GetCurTime();
   return result;
+}
+
+void PrintVerbosr(char *pre, char type, bool hit, bool eviction) {
+  char *h = hit ? "hit" : "miss";
+  char *e = eviction ? "eviction" : "";
+  char *format;
+  if (type == 'M') {
+    format = "%s%s%s\n";
+    strcat(pre, format);
+    printf(pre, h, e, " hit");
+  } else {
+    format = "%s%s\n";
+    strcat(pre, format);
+    printf(pre, h, e);
+  }
+}
+/* 缓存模拟核心逻辑 */
+void CacheAccess(CacheLine **cache, int s, int E, int b, int v, int bytes,
+                 int *hits, int *misses, int *evictions, unsigned long addr,
+                 char type) {
+  bool hit = false, eviction = false;
+  char pre[20];
+  unsigned long tag = addr >> (b + s),
+                sets = ((addr << (64 - b - s)) >> (64 - s));
+  CacheLine *set = cache[sets];
+  hit = isHit(set, E, tag);
+  if (!hit) {
+    eviction = PutInCache(set, E, tag);
+  }
+  if (v) { // 打印信息
+    sprintf(pre, "%c %lx,%d", type, addr, bytes);
+    print_verbose(pre, type, hit, eviction);
+  }
+  // 统计数量
+  *hits += hit;
+  if (type == 'M') {
+    *hits += 1;
+  }
+  *misses += !hit;
+  *evictions += eviction;
 }
 
 void print_usage() {
