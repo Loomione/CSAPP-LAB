@@ -6,10 +6,15 @@
 #include "time.h"
 #include "unistd.h"
 
+#define true 1
+#define false 0
+
+typedef int bool;
+
 typedef struct CacheLine {
   int vaildBit;
   int tag;
-  int time; // 时间戳；
+  size_t time; // 时间戳；
 } CacheLine;
 
 /*cache 初始化*/
@@ -33,6 +38,24 @@ void Clean(CacheLine **cache, int set_index_bits) {
     free(cache[i]);
   }
   free(cache);
+}
+
+/*获取当前时间戳*/
+size_t GetCurTime() {
+  static size_t time = 0;
+  return time++;
+}
+
+bool isHit(CacheLine *line, int line_length, unsigned long tag) {
+  bool res = false;
+  for (int i = 0; i < line_length; i++) {
+    if (tag == line[i].tag && line[i].vaildBit == true) {
+      res = true;
+      line[i].time = GetCurTime();
+      break;
+    }
+  }
+  return res;
 }
 
 void print_usage() {
