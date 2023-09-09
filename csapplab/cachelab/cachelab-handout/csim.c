@@ -6,7 +6,7 @@
 #include "time.h"
 #include "unistd.h"
 
-void usage() {
+void print_usage() {
   printf("Usage: ./csim-ref [-hv] -s <num> -E <num> -b <num> -t <file>\n");
   printf("Options:\n");
   printf("  -h         Print this help message.\n");
