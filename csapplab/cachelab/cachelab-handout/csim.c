@@ -12,6 +12,29 @@ typedef struct CacheLine {
   int time; // 时间戳；
 } CacheLine;
 
+/*cache 初始化*/
+CacheLine **Initiate(int set_index_bits, int associativity) {
+  int sets = 1 << set_index_bits; // 组数量 2^s;
+  unsigned int size;
+  CacheLine **cache;
+  cache = (CacheLine **)malloc(sizeof(CacheLine) * sets);
+  for (int i = 0; i < sets; i++) {
+    size = sizeof(CacheLine) * associativity;
+    cache[i] = (CacheLine *)malloc(size);
+    memset(cache[i], 0, size);
+  }
+  return cache;
+}
+
+/*释放Cache*/
+void Clean(CacheLine **cache, int set_index_bits) {
+  int sets = 1 << set_index_bits;
+  for (int i = 0; i < sets; i++) {
+    free(cache[i]);
+  }
+  free(cache);
+}
+
 void print_usage() {
   printf("Usage: ./csim-ref [-hv] -s <num> -E <num> -b <num> -t <file>\n");
   printf("Options:\n");
