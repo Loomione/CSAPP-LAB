@@ -6,6 +6,12 @@
 #include "time.h"
 #include "unistd.h"
 
+typedef struct CacheLine {
+  int vaildBit;
+  int tag;
+  int time; // 时间戳；
+} CacheLine;
+
 void print_usage() {
   printf("Usage: ./csim-ref [-hv] -s <num> -E <num> -b <num> -t <file>\n");
   printf("Options:\n");
