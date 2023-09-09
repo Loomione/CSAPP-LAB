@@ -12,7 +12,7 @@
 typedef int bool;
 
 typedef struct CacheLine {
-  int vaildBit;
+  bool vaildBit;
   int tag;
   size_t time; // 时间戳；
 } CacheLine;
@@ -46,6 +46,7 @@ size_t GetCurTime() {
   return time++;
 }
 
+/*判断是否hit*/
 bool isHit(CacheLine *line, int line_length, unsigned long tag) {
   bool res = false;
   for (int i = 0; i < line_length; i++) {
@@ -56,6 +57,33 @@ bool isHit(CacheLine *line, int line_length, unsigned long tag) {
     }
   }
   return res;
+}
+/*将一个缓存块放入缓存行中*/
+int PutInCache(CacheLine *line, int line_length, unsigned long tag) {
+  int i, index = 0;
+  bool result = false;
+  size_t time = line[0].time;
+  for (i = 0; i < line_length; i++) {
+    if (line[i].vaildBit == false) {
+      line[i].tag = tag;
+      line[i].vaildBit = true;
+      line[i].time = GetCurTime();
+    }
+  }
+  /*没有空位了，使用LRU算法驱逐缓存块*/
+  for (i = 0; i < line_length; i++) {
+    if (time > line[i].time) {
+      time = line[i].time;
+      index = i;
+    }
+  }
+  // 使用时间戳算法的缺点是 ： 每次都需要遍历整个缓存行；算法复杂度为O(n);
+  // 可以替换为list + hash的实现方法，将时间复杂度降为O(1);
+  result = true;
+  line[index].tag = tag;
+  line[index].vaildBit = true;
+  line[index].time = GetCurTime();
+  return result;
 }
 
 void print_usage() {
