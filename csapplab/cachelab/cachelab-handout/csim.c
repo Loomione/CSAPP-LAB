@@ -68,6 +68,7 @@ bool PutInCache(CacheLine *line, int line_length, unsigned long tag) {
       line[i].tag = tag;
       line[i].vaildBit = true;
       line[i].time = GetCurTime();
+      return result;
     }
   }
   /*没有空位了，使用LRU算法驱逐缓存块*/
