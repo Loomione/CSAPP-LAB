@@ -115,7 +115,7 @@ void CacheAccess(CacheLine **cache, int s, int E, int b, int v, int bytes,
   }
   if (v) { // 打印信息
     sprintf(pre, "%c %lx,%d", type, addr, bytes);
-    print_verbose(pre, type, hit, eviction);
+    PrintVerbosr(pre, type, hit, eviction);
   }
   // 统计数量
   *hits += hit;
@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
   FILE *fp;
   // cache_line **cache;
   /* 解析命令行参数 */
-  while ((input = getopt(argc, argv, "s:E🅱️t:vh")) != -1) {
+  while ((input = getopt(argc, argv, "s:E:b:t:vh")) != -1) {
     has_opt = 1;
     switch (input) {
     case 's':
@@ -181,6 +181,25 @@ int main(int argc, char **argv) {
     print_usage();
     return 0;
   }
-  printSummary(0, 0, 0);
+  CacheLine **cache = Initiate(s, E);
+  fp = fopen(t, "r");
+  if (fp == NULL) {
+    printf("%s: No such file or directory\n", t);
+    exit(1);
+  } else {
+    while (fscanf(fp, " %c %lx,%d", &type, &address, &bytes) != EOF) {
+      /* 'I' 类型的指令读取我们不关心 */
+      if (type == 'I') {
+        continue;
+      } else {
+        /* 得到详细参数,进入缓存模拟核心逻辑 */
+        CacheAccess(cache, s, E, b, v, bytes, &hits, &misses, &evictions,
+                    address, type);
+      }
+    }
+    fclose(fp);
+  }
+
+  printSummary(hits, misses, evictions);
   return 0;
 }
