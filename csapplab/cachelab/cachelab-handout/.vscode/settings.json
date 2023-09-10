@@ -3,5 +3,12 @@
     "*.excalidraw": "json",
     "*.excalidrawlib": "json",
     "time.h": "c"
-  }
+  },
+  "makefile.launchConfigurations": [
+    {
+      "cwd": "/home/ggbond/CSAPP/csapplab/cachelab/cachelab-handout",
+      "binaryPath": "/home/ggbond/CSAPP/csapplab/cachelab/cachelab-handout/csim",
+      "binaryArgs": []
+    }
+  ]
 }
