@@ -12,7 +12,7 @@
 typedef int bool;
 
 typedef struct CacheLine {
-  bool vaildBit;
+  bool vaildBit; // 是否有效
   int tag;
   size_t time; // 时间戳；
 } CacheLine;
@@ -63,6 +63,7 @@ bool PutInCache(CacheLine *line, int line_length, unsigned long tag) {
   int i, index = 0;
   bool result = false;
   size_t time = line[0].time;
+  // 在缓存行中寻找空位
   for (i = 0; i < line_length; i++) {
     if (line[i].vaildBit == false) {
       line[i].tag = tag;
